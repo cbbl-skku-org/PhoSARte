@@ -1,0 +1,1 @@
+The extracted embeddings for the Combined dataset will be stored in this folder.

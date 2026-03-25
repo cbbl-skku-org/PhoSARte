@@ -1,0 +1,1 @@
+The extracted embeddings for the Vero E6 dataset will be stored in this folder.
