@@ -42,8 +42,8 @@ torch.cuda.empty_cache()
 
 # Default local paths for each PLM (edit as needed)
 PLM_PATHS = {
-    "prot_t5_xl_bfd": "ProtTrans/models--Rostlab--prot_t5_xl_bfd/snapshots/7ae1d5c1d148d6c65c7e294cc72807e5b454fdb7",
-    "prot_t5_xxl_uniref50": "ProtTrans/models--Rostlab--prot_t5_xxl_uniref50/snapshots/31a40d7b55caf68d7a8a8dfd913b779b99dc09a9",
+    "prot_t5_xl_bfd": "ProtTrans_models/models--Rostlab--prot_t5_xl_bfd/snapshots/7ae1d5c1d148d6c65c7e294cc72807e5b454fdb7",
+    "prot_t5_xxl_uniref50": "ProtTrans_models/models--Rostlab--prot_t5_xxl_uniref50/snapshots/31a40d7b55caf68d7a8a8dfd913b779b99dc09a9",
 }
 
 # Mapping from PLM name to embedding dimension
@@ -369,7 +369,7 @@ def parse_args():
     parser.add_argument(
         "--model_dir", type=str,
         default=os.path.join(os.path.dirname(__file__), "final_models"),
-        help="Directory containing PhoSARte .pt model files",
+        help="Directory containing PhoSARte .pt model files (default: final_models)",
     )
     parser.add_argument(
         "--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu",
@@ -380,8 +380,8 @@ def parse_args():
         help="Batch size for inference (default: 128)",
     )
     parser.add_argument(
-        "--output", type=str, default=None,
-        help="Optional path to save prediction results as CSV",
+        "--output", type=str, default="results",
+        help="Directory to save prediction results (default: results)",
     )
     return parser.parse_args()
 
@@ -496,13 +496,13 @@ def main():
     # Optionally save results
     if args.output:
         output_df = pd.DataFrame({
-            "Sample": test_seq,
+            "Sample": [seq.replace(" ", "") for seq in test_seq],
             "Real_Label": real1,
             "Predicted_Probability": pre_pro,
             "Predicted_Class": pred_cls.astype(int),
         })
-        output_df.to_csv(args.output, index=False)
-        print(f"\nResults saved to {args.output}")
+        output_df.to_csv(os.path.join(args.output, f"PhoSARte_{args.model_type}_Results.csv"), index=False)
+        print(f"\nResults saved to {os.path.join(args.output, f'PhoSARte_{args.model_type}_Results.csv')}")
 
 
 if __name__ == "__main__":
